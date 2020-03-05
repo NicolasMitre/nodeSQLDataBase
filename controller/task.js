@@ -19,6 +19,16 @@ const viewById = (req, res) => {
   });
 };
 
+const viewByFilter = (req, res) => {
+  console.log(req.query);
+  let filtros = `isDone = '${req.query.isDone}'`;
+  let sql = "SELECT * FROM tasks_table WHERE " + filtros + ";";
+  db.query(sql, (err, rows) => {
+    if (err) throw err;
+    res.json(rows);
+  });
+};
+
 /* Consultas a la base de datos por medio de un POST */
 
 //Agregar una nueva fila por medio del body-parser
@@ -39,6 +49,9 @@ const addNewData = (req, res) => {
   });
 };
 
+/* Consultas para eliminar CUIDADO */
+
+// esta consulta elimina una fila mediante el id que se le pasa por la url
 const deleteById = (req, res) => {
   let sql = "DELETE FROM tasks_table WHERE id=" + req.params.id + ";";
 
@@ -48,10 +61,20 @@ const deleteById = (req, res) => {
   });
 };
 
+/* Consultas para actualizar la base de datos */
+
+// esta consulta actualiza valores mediante el body parser del postman
 const upgrade = (req, res) => {
-  var sql =
-    "UPDATE tasks_table SET title = 'Actualizado justo ahora' WHERE id =" +
-    req.params.id +
+  const data = req.body;
+  let sql =
+    "UPDATE tasks_table SET title = '" +
+    data.title +
+    "', description = '" +
+    data.description +
+    "', isDone = '" +
+    data.isDone +
+    "' WHERE id =" +
+    data.id +
     ";";
   db.query(sql, function(err, result) {
     if (err) throw err;
@@ -62,6 +85,7 @@ const upgrade = (req, res) => {
 module.exports = {
   viewAll,
   viewById,
+  viewByFilter,
   addNewData,
   deleteById,
   upgrade

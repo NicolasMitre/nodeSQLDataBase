@@ -12,8 +12,8 @@ const viewAll = (req, res) => {
 
 //Al pasarle un id a la url obtenemos una sola de nuestras filas
 const viewById = (req, res) => {
-  let sql = "SELECT * FROM tasks_table WHERE id=" + req.params.id + ";";
-  db.query(sql, (err, rows) => {
+  let sql = "SELECT * FROM tasks_table WHERE id=?;";
+  db.query(sql, [req.params.id], (err, rows) => {
     if (err) throw err;
     res.json(rows);
   });
@@ -33,17 +33,10 @@ const viewByFilter = (req, res) => {
 
 //Agregar una nueva fila por medio del body-parser
 const addNewData = (req, res) => {
-  const data = req.body;
+  const { title, description, isDone } = req.body;
   let sql =
-    "INSERT INTO tasks_table (title, description, isDone) VALUES ('" +
-    data.title +
-    "', '" +
-    data.description +
-    "', '" +
-    data.isDone +
-    "')";
-
-  db.query(sql, err => {
+    "INSERT INTO tasks_table (title, description, isDone) VALUES (?, ?, ?)";
+  db.query(sql, [title, description, isDone], (err, data) => {
     if (err) throw err;
     res.json(data);
   });
@@ -53,9 +46,9 @@ const addNewData = (req, res) => {
 
 // esta consulta elimina una fila mediante el id que se le pasa por la url
 const deleteById = (req, res) => {
-  let sql = "DELETE FROM tasks_table WHERE id=" + req.params.id + ";";
+  let sql = "DELETE FROM tasks_table WHERE id=?;";
 
-  db.query(sql, (error, results) => {
+  db.query(sql, [req.params.id], (error, results) => {
     if (error) return console.error(error.message);
     res.json(results.affectedRows);
   });
@@ -65,18 +58,10 @@ const deleteById = (req, res) => {
 
 // esta consulta actualiza valores mediante el body parser del postman
 const upgrade = (req, res) => {
-  const data = req.body;
+  const { id, title, description, isDone } = req.body;
   let sql =
-    "UPDATE tasks_table SET title = '" +
-    data.title +
-    "', description = '" +
-    data.description +
-    "', isDone = '" +
-    data.isDone +
-    "' WHERE id =" +
-    data.id +
-    ";";
-  db.query(sql, function(err, result) {
+    "UPDATE tasks_table SET title = ?, description = ?, isDone = ? WHERE id = ?;";
+  db.query(sql, [title, description, isDone, id], function(err, result) {
     if (err) throw err;
     res.json(result.affectedRows);
   });

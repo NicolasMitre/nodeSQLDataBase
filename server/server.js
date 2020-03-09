@@ -13,7 +13,7 @@ const bodyParser = require("body-parser");
 
 /* Adding .env to the proyect */
 require("dotenv").config();
-const port = process.env.DB_PORT; // PORT global
+const port = process.env.NODE_PORT; // PORT global
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
